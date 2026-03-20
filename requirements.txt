@@ -1,0 +1,10 @@
+transformers>=4.40.0,<4.45
+peft>=0.10.0,<0.12
+trl>=0.8.6,<0.10
+datasets>=2.19.0
+accelerate>=0.29.3,<0.34
+bitsandbytes==0.42.0
+streamlit>=1.33.0
+torch==2.2.2
+numpy<2
+setuptools

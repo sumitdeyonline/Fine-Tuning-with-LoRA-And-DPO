@@ -1,0 +1,18 @@
+[project]
+name = "finetuningwithloraanddpo"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "accelerate>=0.29.3,<0.34",
+    "bitsandbytes==0.42.0",
+    "datasets>=2.19.0",
+    "numpy<2",
+    "peft>=0.10.0,<0.12",
+    "setuptools>=82.0.1",
+    "streamlit>=1.33.0",
+    "torch==2.2.2",
+    "transformers>=4.40.0,<4.45",
+    "trl>=0.8.6,<0.10",
+]
