@@ -40,7 +40,7 @@ def train_sft():
         quantization_config=quant_config,
         device_map=device_map,
         trust_remote_code=True,
-        torch_dtype=torch.bfloat16 if torch.cuda.is_bf16_supported() else torch.float32
+        torch_dtype=torch.bfloat16 if (torch.cuda.is_available() and torch.cuda.is_bf16_supported()) else torch.float32
     )
 
     if quant_config:

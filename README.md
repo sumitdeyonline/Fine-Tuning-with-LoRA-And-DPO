@@ -174,5 +174,7 @@ streamlit run app.py
 ### DPO Configuration (`train_dpo.py`)
 * **Learning Rate**: `5e-5`
 * **Beta (DPO temperature)**: `0.1`
-* **Batch Size / Accumulation**: Batch Size of `2`, Gradient Accumulation of `8`
+* **Batch Size / Accumulation**: Batch Size of `1`, Gradient Accumulation of `1` (Optimized for quick CPU execution; originally Batch Size `2`, Accumulation `8`)
+* **Max Steps**: `5` (Demo steps optimized for CPU validation; originally `50`)
 * **Reference Model**: Implicitly handled by TRL PEFT adapter configurations.
+* **DPO Trainer Config**: Uses `DPOConfig` with `max_length=512`, `max_prompt_length=128`, and `remove_unused_columns=False`.

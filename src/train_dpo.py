@@ -5,10 +5,9 @@ from transformers import (
     AutoModelForCausalLM,
     AutoTokenizer,
     BitsAndBytesConfig,
-    TrainingArguments,
 )
 from peft import LoraConfig, PeftModel
-from trl import DPOTrainer
+from trl import DPOTrainer, DPOConfig
 
 def train_dpo():
     base_model_name = "Qwen/Qwen2.5-0.5B-Instruct"
@@ -38,7 +37,7 @@ def train_dpo():
         quantization_config=quant_config,
         device_map=device_map,
         trust_remote_code=True,
-        torch_dtype=torch.bfloat16 if torch.cuda.is_bf16_supported() else torch.float32
+        torch_dtype=torch.bfloat16 if (torch.cuda.is_available() and torch.cuda.is_bf16_supported()) else torch.float32
     )
 
     # 2. Load the SFT adapter
@@ -77,12 +76,14 @@ def train_dpo():
         merged_model_path,
         quantization_config=quant_config,
         device_map=device_map,
-        torch_dtype=torch.bfloat16 if torch.cuda.is_bf16_supported() else torch.float32
+        torch_dtype=torch.bfloat16 if (torch.cuda.is_available() and torch.cuda.is_bf16_supported()) else torch.float32
     )
 
     tokenizer = AutoTokenizer.from_pretrained(base_model_name, trust_remote_code=True)
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
+    if tokenizer.bos_token is None:
+        tokenizer.bos_token = tokenizer.eos_token
         
     tokenizer.save_pretrained(merged_model_path)
 
@@ -114,19 +115,22 @@ def train_dpo():
     )
 
     # Training Arguments
-    training_args = TrainingArguments(
+    training_args = DPOConfig(
         output_dir=output_dir,
-        per_device_train_batch_size=2,
-        gradient_accumulation_steps=8,
+        per_device_train_batch_size=1,
+        gradient_accumulation_steps=1,
         optim="adamw_torch" if not torch.cuda.is_available() else "paged_adamw_8bit",
         learning_rate=5e-5,
-        save_steps=50,
-        logging_steps=10,
-        max_steps=50, # Demo steps
+        save_steps=5,
+        logging_steps=1,
+        max_steps=5, # Demo steps
         warmup_ratio=0.1,
         fp16=False,
         bf16=torch.cuda.is_bf16_supported() if torch.cuda.is_available() else False,
-        report_to="none"
+        remove_unused_columns=False,
+        max_length=512,
+        max_prompt_length=128,
+        report_to="none",
     )
 
     # DPO Trainer
